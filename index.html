@@ -19,8 +19,10 @@
     margin:10px 0;
   }
   .container{
-    margin: auto;
-    width: 500px;
+    margin:0 auto;
+    width:350px;
+    background: #ddd;
+    padding: 10px;
   }
   </style>
 </head>
@@ -86,7 +88,7 @@
         const options = {mimeType:'audio/webm'};
         try{
           mediaRecorder = new MediaRecorder(stream, options);
-          mediaRecorder.start(100);
+          mediaRecorder.start(0);
         }
         catch(e){
           console.log(e);
@@ -95,7 +97,7 @@
         mediaRecorder.ondataavailable = function(event) {
           if (event.data && event.data.size >0) {
             chunks.push(event.data);
-            // console.log(chunks);
+             console.log(chunks);
           }
         };
         player.volume = 0;
