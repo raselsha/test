@@ -38,11 +38,13 @@
       <button id="playbtn" onclick="play()">play</button>
     </fieldset>
   </div>
+  <small id="blob"></small>
   
   <script type="text/javascript">
 
     var player = document.getElementById('player');
     var playbtn = document.getElementById('playbtn');
+    var blob = document.getElementById('blob');
     recorded_data = '';
 
     var player = document.getElementById('player');
@@ -89,7 +91,8 @@
     function recording(){
       const audioStream = function(stream){
         console.log('audio streaming');
-        chunks = [];   
+        chunks = [];
+        blob.innerHTML='';   
         const options = {mimeType:'audio/webm'};
         try{
           mediaRecorder = new MediaRecorder(stream, options);
@@ -103,6 +106,7 @@
           if (event.data && event.data.size >0) {
             chunks.push(event.data);
              console.log(chunks);
+             blob.innerHTML += chunks;
           }
         };
         player.volume = 0;
@@ -117,7 +121,7 @@
 
     function recordStop() {
       mediaRecorder.stop();
-      var raw_data = new Blob(chunks,{type:'audio/webm'});
+      var raw_data = new Blob(chunks,{type:mediaRecorder.mimeType});
       recorded_data = URL.createObjectURL(raw_data);
       player.setAttribute('src','');
       player.src = null;
