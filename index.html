@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>recorder</title>
+  <style type="text/css">
+  button{
+    width: 100px;
+    border-radius: 50px;
+    padding:10px;
+    display: inline-block;
+    float: none;
+    clear: both;
+    font-weight: bold;
+    font-size: 12px;
+  }
+  audio{
+    display: block;
+    margin:10px 0;
+  }
+  .container{
+    margin: auto;
+    width: 500px;
+  }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <fieldset>
+      <legend>Record audio</legend> 
+      <audio id="player" controls></audio>
+      <button id="mic" onclick="start()">Start</button>
+      <button id="playbtn" onclick="play()">play</button>
+    </fieldset>
+  </div>
+  
+  <script type="text/javascript">
+
+    var player = document.getElementById('player');
+    var playbtn = document.getElementById('playbtn');
+    recorded_data = '';
+
+    var player = document.getElementById('player');
+
+      var handleSuccess = function(stream) {
+        player.srcObject = stream;
+      };
+
+      navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+          .then(handleSuccess)
+
+    window.addEventListener('load',startUp);
+    function startUp(){
+      navigator.mediaDevices.getUserMedia({audio:true,video:true});
+      console.log('media permission ask');
+    }
+
+    function start(){
+      console.log('start()');
+      var mic = document.getElementById('mic');
+      var att = document.createAttribute('onclick');
+      att.value = 'stop()';
+      mic.innerHTML = 'Stop';
+      mic.style.backgroundColor = 'red';
+      mic.style.color = 'white';
+      mic.setAttributeNode(att);
+      recording();
+    }
+
+    function stop(){
+      console.log('stop()');
+      var mic = document.getElementById('mic');
+      var att = document.createAttribute('onclick');
+      att.value = 'start()';
+      mic.setAttributeNode(att);
+      mic.innerHTML = 'Start';
+      mic.style.backgroundColor = 'white';
+      mic.style.color = 'black';
+      recordStop();
+    }
+
+    function recording(){
+      const audioStream = function(stream){
+        console.log('audio streaming');
+        chunks = [];   
+        const options = {mimeType:'audio/webm'};
+        try{
+          mediaRecorder = new MediaRecorder(stream, options);
+          mediaRecorder.start(100);
+        }
+        catch(e){
+          console.log(e);
+        }
+        
+        mediaRecorder.ondataavailable = function(event) {
+          if (event.data && event.data.size >0) {
+            chunks.push(event.data);
+            // console.log(chunks);
+          }
+        };
+        player.volume = 0;
+        player.srcObject = stream;
+        player.play();
+        console.log(player.volume);
+        
+        
+      }
+      navigator.mediaDevices.getUserMedia({audio:true,video:false}).then(audioStream);
+    }
+
+    function recordStop() {
+      mediaRecorder.stop();
+      var raw_data = new Blob(chunks,{type:'audio/webm'});
+      recorded_data = URL.createObjectURL(raw_data);
+      player.setAttribute('src','');
+      player.src = null;
+      player.srcObject = null;
+    }
+
+    function play(){
+      player.src = recorded_data;
+      player.play();
+      player.volume = 1;
+    }
+
+  </script>
+</body>
+</html>
