@@ -77,6 +77,8 @@
       mic.setAttributeNode(att);
       mic.innerHTML = 'Start';
       mic.style.backgroundColor = 'white';
+      playbtn.style.backgroundColor = '#30c3ff';
+      playbtn.style.color = 'white';
       mic.style.color = 'black';
       recordStop();
     }
@@ -88,7 +90,7 @@
         const options = {mimeType:'audio/webm'};
         try{
           mediaRecorder = new MediaRecorder(stream, options);
-          mediaRecorder.start(0);
+          mediaRecorder.start(1);
         }
         catch(e){
           console.log(e);
