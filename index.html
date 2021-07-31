@@ -105,8 +105,14 @@
         player.play();
         console.log(player.volume);
       }
-      navigator.mediaDevices.getUserMedia = navigator.mediaDevices.getUserMedia || navigator.mediaDevices.webkitGetUserMedia || navigator.mediaDevices.mozGetUserMedia;
-      navigator.mediaDevices.getUserMedia({audio:true,video:true}).then(audioStream);
+      error = function(e) {
+        console.log(e);
+      }
+      navigator.getUserMedia = navigator.getUserMedia ||
+                         navigator.webkitGetUserMedia ||
+                         navigator.mozGetUserMedia;
+      // navigator.getUserMedia({audio:true,video:true}).then(audioStream);
+      navigator.getUserMedia({audio:true,video:true},audioStream,error);
     }
 
     function recordStop() {
