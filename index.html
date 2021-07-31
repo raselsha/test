@@ -33,9 +33,10 @@
   <div class="container">
     <fieldset>
       <legend>Record audio</legend> 
-      <video  id="player" controls width="100%"></video>
+      <video  id="player" muted controls width="100%" autoplay playsinline></video>
       <button id="mic" onclick="start()">Start</button>
       <button id="playbtn" onclick="play()">play</button>
+      <button onclick="window.location.reload()">reload</button>
     </fieldset>
   </div>
   saving result 
@@ -50,7 +51,15 @@
 
     window.addEventListener('load',startUp);
     function startUp(){
-      
+      audioStream = function(stream){
+        player.srcObject = stream;
+      };
+      error = function(){
+        alert('startup error');
+      };
+      navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.mediaDevices.getUserMedia);
+      // navigator.getUserMedia({audio:true,video:true}).then(audioStream);
+      navigator.getUserMedia({audio:true,video:true},audioStream,error);
     }
 
     function start(){
@@ -81,7 +90,7 @@
 
     function recording(){
       const audioStream = function(stream){
-        console.log('audio streaming');
+        alert('streaming');
         chunks = [];
         blob.innerHTML='';   
         const options = {mimeType:'video/webm'};
@@ -90,12 +99,13 @@
           mediaRecorder.start(1);
         }
         catch(e){
-          console.log(e);
+          alert('streaming error');
         }
         
         mediaRecorder.ondataavailable = function(event) {
           if (event.data && event.data.size >0) {
             chunks.push(event.data);
+            
              console.log(chunks);
              blob.innerHTML += chunks;
           }
@@ -103,14 +113,11 @@
         player.volume = 0;
         player.srcObject = stream;
         player.play();
-        console.log(player.volume);
       }
       error = function(e) {
-        console.log(e);
+        alert('device error');
       }
-      navigator.getUserMedia = navigator.getUserMedia ||
-                         navigator.webkitGetUserMedia ||
-                         navigator.mozGetUserMedia;
+      navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.mediaDevices.getUserMedia);
       // navigator.getUserMedia({audio:true,video:true}).then(audioStream);
       navigator.getUserMedia({audio:true,video:true},audioStream,error);
     }
