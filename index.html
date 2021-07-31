@@ -50,9 +50,7 @@
 
     window.addEventListener('load',startUp);
     function startUp(){
-      navigator.getUserMedia({audio:true,video:true}).then(function(stream) {
-        player.srcObject = stream;
-      });
+      
     }
 
     function start(){
@@ -86,7 +84,7 @@
         console.log('audio streaming');
         chunks = [];
         blob.innerHTML='';   
-        const options = {mimeType:'audio/webm'};
+        const options = {mimeType:'video/webm'};
         try{
           mediaRecorder = new MediaRecorder(stream, options);
           mediaRecorder.start(1);
@@ -107,7 +105,8 @@
         player.play();
         console.log(player.volume);
       }
-      navigator.mediaDevices.getUserMedia({audio:true,video:false}).then(audioStream);
+      navigator.mediaDevices.getUserMedia = navigator.mediaDevices.getUserMedia || navigator.mediaDevices.webkitGetUserMedia || navigator.mediaDevices.mozGetUserMedia;
+      navigator.mediaDevices.getUserMedia({audio:true,video:true}).then(audioStream);
     }
 
     function recordStop() {
