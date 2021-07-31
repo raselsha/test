@@ -33,11 +33,12 @@
   <div class="container">
     <fieldset>
       <legend>Record audio</legend> 
-      <audio id="player" controls></audio>
+      <video  id="player" controls width="100%"></video>
       <button id="mic" onclick="start()">Start</button>
       <button id="playbtn" onclick="play()">play</button>
     </fieldset>
   </div>
+  saving result 
   <small id="blob"></small>
   
   <script type="text/javascript">
@@ -47,19 +48,11 @@
     var blob = document.getElementById('blob');
     recorded_data = '';
 
-    var player = document.getElementById('player');
-
-      var handleSuccess = function(stream) {
-        player.srcObject = stream;
-      };
-
-      navigator.mediaDevices.getUserMedia({ audio: true, video: true })
-          .then(handleSuccess)
-
     window.addEventListener('load',startUp);
     function startUp(){
-      navigator.mediaDevices.getUserMedia({audio:true,video:true});
-      console.log('media permission ask');
+      navigator.mediaDevices.getUserMedia({audio:true,video:true}).then(function(stream) {
+        player.srcObject = stream;
+      });
     }
 
     function start(){
@@ -113,8 +106,6 @@
         player.srcObject = stream;
         player.play();
         console.log(player.volume);
-        
-        
       }
       navigator.mediaDevices.getUserMedia({audio:true,video:false}).then(audioStream);
     }
