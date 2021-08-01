@@ -5,7 +5,6 @@
   <title>recorder</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <style type="text/css">
   button{
     width: 100px;
@@ -28,39 +27,26 @@
     padding: 10px;
   }
   </style>
+  <script src="script.js"></script>
 </head>
 <body>
-  <div class="container">
+<div class="container">
     <fieldset>
       <legend>Record audio</legend> 
-      <video  id="player" muted controls width="100%" autoplay playsinline></video>
+      <audio id="player" controls></audio>
+      <p id="timer"></p>
       <button id="mic" onclick="start()">Start</button>
       <button id="playbtn" onclick="play()">play</button>
       <button onclick="window.location.reload()">reload</button>
     </fieldset>
-  </div>
-  saving result 
-  <small id="blob"></small>
-  
-  <script type="text/javascript">
-
+</div>
+<script>
+    var audioTrack = new WebAudioTrack();
     var player = document.getElementById('player');
+    var timer = document.getElementById('timer');
     var playbtn = document.getElementById('playbtn');
     var blob = document.getElementById('blob');
-    recorded_data = '';
-
-    window.addEventListener('load',startUp);
-    function startUp(){
-      audioStream = function(stream){
-        player.srcObject = stream;
-      };
-      error = function(){
-        alert('startup error');
-      };
-      navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.mediaDevices.getUserMedia);
-      // navigator.getUserMedia({audio:true,video:true}).then(audioStream);
-      navigator.getUserMedia({audio:true,video:true},audioStream,error);
-    }
+    var recorded_data = '';
 
     function start(){
       console.log('start()');
@@ -71,9 +57,10 @@
       mic.style.backgroundColor = 'red';
       mic.style.color = 'white';
       mic.setAttributeNode(att);
-      recording();
+      audioTrack.startRecording(function() {
+        timer.innerHTML = getRecordingTime();
+      });
     }
-
     function stop(){
       console.log('stop()');
       var mic = document.getElementById('mic');
@@ -85,58 +72,13 @@
       playbtn.style.backgroundColor = '#30c3ff';
       playbtn.style.color = 'white';
       mic.style.color = 'black';
-      recordStop();
+      audioTrack.stopRecording(function() {});
+      
     }
-
-    function recording(){
-      const audioStream = function(stream){
-        alert('streaming');
-        chunks = [];
-        blob.innerHTML='';   
-        const options = {mimeType:'video/webm'};
-        try{
-          mediaRecorder = new MediaRecorder(stream, options);
-          mediaRecorder.start(1);
-        }
-        catch(e){
-          alert('streaming error');
-        }
-        
-        mediaRecorder.ondataavailable = function(event) {
-          if (event.data && event.data.size >0) {
-            chunks.push(event.data);
-            
-             console.log(chunks);
-             blob.innerHTML += chunks;
-          }
-        };
-        player.volume = 0;
-        player.srcObject = stream;
-        player.play();
-      }
-      error = function(e) {
-        alert('device error');
-      }
-      navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.mediaDevices.getUserMedia);
-      // navigator.getUserMedia({audio:true,video:true}).then(audioStream);
-      navigator.getUserMedia({audio:true,video:true},audioStream,error);
-    }
-
-    function recordStop() {
-      mediaRecorder.stop();
-      var raw_data = new Blob(chunks,{type:mediaRecorder.mimeType});
-      recorded_data = URL.createObjectURL(raw_data);
-      player.setAttribute('src','');
-      player.src = null;
-      player.srcObject = null;
-    }
-
     function play(){
-      player.src = recorded_data;
+      player.src = audioTrack.getBlobSrc();
       player.play();
-      player.volume = 1;
     }
-
-  </script>
+</script>
 </body>
 </html>
